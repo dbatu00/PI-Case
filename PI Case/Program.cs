@@ -19,6 +19,9 @@ class Program
         string fileName = "exhibitA-input.csv";
         string executablePath = AppDomain.CurrentDomain.BaseDirectory;
         string filePath = Path.Combine(Directory.GetParent(executablePath).FullName, fileName);
+        int totalLines = File.ReadLines(filePath).Count();
+        int linesRead = 0;
+
 
 
         using (StreamReader reader = new StreamReader(filePath))
@@ -27,6 +30,7 @@ class Program
             
             while (!reader.EndOfStream)          
             {
+                linesRead++;
                 line = reader.ReadLine();
                 string[] columns = line.Split(new char[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -55,8 +59,33 @@ class Program
                     }
                             
                 }
+
+                // Calculate and display the percentage
+                double percentage = ((double)linesRead / totalLines) * 100;
+                Console.WriteLine($"Percentage of CSV file read: {percentage:F2}%");
             }
         }
+
+        // Count clients who played 346 distinct songs
+        int clientsWith346Songs = clientList.Count(client => client.UniqueSongs.Distinct().Count() == 346);
+
+        // Find the client with the most unique songs
+        Client clientWithMostSongs = clientList.OrderByDescending(client => client.UniqueSongs.Count).FirstOrDefault();
+
+        // Display results
+        Console.WriteLine($"Number of clients who played 346 distinct songs: {clientsWith346Songs}");
+
+        if (clientWithMostSongs.ClientId != null)
+        {
+            Console.WriteLine($"Client with the most unique songs listened (ID: {clientWithMostSongs.ClientId}): {clientWithMostSongs.UniqueSongs.Count}");
+        }
+        else
+        {
+            Console.WriteLine("No clients found.");
+        }
+
+
+
         // Specify the file path for output
         string outputPath = "output.txt";
 
@@ -81,9 +110,6 @@ class Program
                 Console.WriteLine();
             }
         }
-
-        Console.SetOut(new StreamWriter(Console.OpenStandardOutput())); // Reset the output to the console
-        Console.WriteLine($"Output written to {outputPath}");
 
     }
 }
